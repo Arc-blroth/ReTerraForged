@@ -2,6 +2,7 @@ package raccoonman.reterraforged.world.worldgen.densityfunction;
 
 import java.util.function.Supplier;
 
+import com.mojang.serialization.MapCodec;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
@@ -99,7 +100,7 @@ public record CellSampler(Supplier<GeneratorContext> generatorContext, CellField
 	}
 	
 	public record Marker(CellField field) implements MappedFunction.Marker {
-		public static final Codec<Marker> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<Marker> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				CellField.CODEC.fieldOf("field").forGetter(Marker::field)
 		).apply(instance, Marker::new));
 		

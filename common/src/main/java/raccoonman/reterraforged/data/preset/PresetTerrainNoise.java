@@ -1,6 +1,6 @@
 package raccoonman.reterraforged.data.preset;
 
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import raccoonman.reterraforged.data.preset.settings.Preset;
 import raccoonman.reterraforged.world.worldgen.noise.module.Noise;
@@ -16,7 +16,7 @@ public class PresetTerrainNoise {
 	public static final ResourceKey<Noise> RIDGES_FOLDED = createKey("ridges_folded");
 	public static final ResourceKey<Noise> OFFSET = createKey("offset");
 	
-	public static void bootstrap(Preset preset, BootstapContext<Noise> ctx) {
+	public static void bootstrap(Preset preset, BootstrapContext<Noise> ctx) {
 	}
 
 	protected static ResourceKey<Noise> createKey(String name) {

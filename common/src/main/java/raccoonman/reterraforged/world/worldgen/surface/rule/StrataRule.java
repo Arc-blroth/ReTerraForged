@@ -6,6 +6,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.Holder;
@@ -35,7 +36,7 @@ import raccoonman.reterraforged.world.worldgen.tile.Tile;
 import raccoonman.reterraforged.world.worldgen.util.PosUtil;
 
 public record StrataRule(ResourceLocation cacheId, int buffer, int iterations, Holder<Noise> selector, List<Layer> layers) implements SurfaceRules.RuleSource {
-	public static final Codec<StrataRule> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final MapCodec<StrataRule> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		ResourceLocation.CODEC.fieldOf("cache_id").forGetter(StrataRule::cacheId),
 		Codec.INT.fieldOf("buffer").forGetter(StrataRule::buffer),
 		Codec.INT.fieldOf("iterations").forGetter(StrataRule::iterations),

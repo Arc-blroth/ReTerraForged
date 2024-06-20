@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.core.Holder;
@@ -59,7 +59,7 @@ public class BiomeModifiers {
 		throw new UnsupportedOperationException();
 	}
 	
-	public static void register(String name, Codec<? extends BiomeModifier> value) {
+	public static void register(String name, MapCodec<? extends BiomeModifier> value) {
 		RegistryUtil.register(RTFBuiltInRegistries.BIOME_MODIFIER_TYPE, name, value);
 	}
 }

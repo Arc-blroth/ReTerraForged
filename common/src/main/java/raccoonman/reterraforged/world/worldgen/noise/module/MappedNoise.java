@@ -1,11 +1,11 @@
 package raccoonman.reterraforged.world.worldgen.noise.module;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 public interface MappedNoise extends Noise {
 	
 	@Override
-	default Codec<? extends Marker> codec() {
+	default MapCodec<? extends Marker> codec() {
 		throw new UnsupportedOperationException();
 	}
 

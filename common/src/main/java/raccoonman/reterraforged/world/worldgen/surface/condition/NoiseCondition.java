@@ -1,6 +1,7 @@
 package raccoonman.reterraforged.world.worldgen.surface.condition;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.Holder;
@@ -26,7 +27,7 @@ public class NoiseCondition extends SurfaceRules.LazyXZCondition {
 	}
 	
 	public record Source(Holder<Noise> noise, float threshold) implements SurfaceRules.ConditionSource {
-		public static final Codec<Source> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<Source> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			Noise.CODEC.fieldOf("noise").forGetter(Source::noise),
 			Codec.FLOAT.fieldOf("threshold").forGetter(Source::threshold)
 		).apply(instance, Source::new));

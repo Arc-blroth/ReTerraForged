@@ -1,6 +1,7 @@
 package raccoonman.reterraforged.world.worldgen.surface.condition;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.util.KeyDispatchDataCodec;
@@ -26,7 +27,7 @@ public class HeightModificationDetection extends CellCondition {
 	}
 
 	public record Source(Target target) implements SurfaceRules.ConditionSource {
-		public static final Codec<Source> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<Source> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			Target.CODEC.fieldOf("target").forGetter(Source::target)
 		).apply(instance, Source::new));
 		

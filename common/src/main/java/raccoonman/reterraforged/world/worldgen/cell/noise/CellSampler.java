@@ -2,7 +2,7 @@ package raccoonman.reterraforged.world.worldgen.cell.noise;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import raccoonman.reterraforged.world.worldgen.cell.Cell;
@@ -61,7 +61,7 @@ public class CellSampler implements MappedNoise {
 	}
 
 	public record Marker(CellField field) implements MappedNoise.Marker {
-		public static final Codec<Marker> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<Marker> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			CellField.CODEC.fieldOf("field").forGetter(Marker::field)
 		).apply(instance, Marker::new));
 		
@@ -71,7 +71,7 @@ public class CellSampler implements MappedNoise {
 		}
 
 		@Override
-		public Codec<Marker> codec() {
+		public MapCodec<Marker> codec() {
 			return CODEC;
 		}		
 	}

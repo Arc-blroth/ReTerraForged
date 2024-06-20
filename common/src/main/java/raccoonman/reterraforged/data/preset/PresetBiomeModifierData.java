@@ -6,7 +6,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.placement.VegetationPlacements;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
@@ -57,7 +57,7 @@ public class PresetBiomeModifierData {
 	public static final ResourceKey<BiomeModifier> FERN_GRASS = createKey("vegetation/grass/fern");
 	public static final ResourceKey<BiomeModifier> BIRCH_GRASS = createKey("vegetation/grass/birch");
 	
-	public static void bootstrap(Preset preset, BootstapContext<BiomeModifier> ctx) {
+	public static void bootstrap(Preset preset, BootstrapContext<BiomeModifier> ctx) {
 		MiscellaneousSettings miscellaneous = preset.miscellaneous();
 		HolderGetter<PlacedFeature> placedFeatures = ctx.lookup(Registries.PLACED_FEATURE);
 		HolderGetter<Biome> biomes = ctx.lookup(Registries.BIOME);

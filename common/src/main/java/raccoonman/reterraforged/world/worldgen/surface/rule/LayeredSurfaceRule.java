@@ -1,6 +1,7 @@
 package raccoonman.reterraforged.world.worldgen.surface.rule;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.Holder;
@@ -13,7 +14,7 @@ import raccoonman.reterraforged.registries.RTFRegistries;
 import raccoonman.reterraforged.world.worldgen.RTFRandomState;
 
 public record LayeredSurfaceRule(TagKey<Layer> layers) implements SurfaceRules.RuleSource {
-	public static final Codec<LayeredSurfaceRule> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final MapCodec<LayeredSurfaceRule> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		TagKey.hashedCodec(RTFRegistries.SURFACE_LAYERS).fieldOf("layers").forGetter(LayeredSurfaceRule::layers)
 	).apply(instance, LayeredSurfaceRule::new));
 		

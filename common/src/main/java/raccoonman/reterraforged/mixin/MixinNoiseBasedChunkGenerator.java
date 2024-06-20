@@ -59,9 +59,9 @@ class MixinNoiseBasedChunkGenerator {
 			value = "INVOKE",
 			target = "Lnet/minecraft/world/level/levelgen/NoiseSettings;height()I"
 		),
-		method = { "fillFromNoise", "populateNoise" }
+		method = { "fillFromNoise" }
 	)
-    public int fillFromNoise(NoiseSettings settings, Executor executor, Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunkAccess2) {
+    public int fillFromNoise(NoiseSettings settings, Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunkAccess2) {
 		GeneratorContext generatorContext;
 		ChunkPos chunkPos = chunkAccess2.getPos();
 		if((Object) randomState instanceof RTFRandomState rtfRandomState && (generatorContext = rtfRandomState.generatorContext()) != null) {
@@ -77,7 +77,7 @@ class MixinNoiseBasedChunkGenerator {
 			target = "Lnet/minecraft/world/level/levelgen/NoiseSettings;height()I"
 		),
 		require = 2,
-		method = { "iterateNoiseColumn", "sampleHeightmap" }
+		method = { "iterateNoiseColumn" }
 	)
     private int iterateNoiseColumn(NoiseSettings settings, LevelHeightAccessor levelHeightAccessor, RandomState randomState, int blockX, int blockZ, @Nullable MutableObject<NoiseColumn> mutableObject, @Nullable Predicate<BlockState> predicate) {
 		GeneratorContext generatorContext;

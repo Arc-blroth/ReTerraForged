@@ -3,13 +3,15 @@ package raccoonman.reterraforged.data.preset.settings;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.core.Cloner;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.resources.RegistryDataLoader;
 import net.minecraft.resources.ResourceKey;
 import raccoonman.reterraforged.compat.terrablender.TBNoiseRouterData;
 import raccoonman.reterraforged.data.preset.PresetBiomeData;
@@ -27,6 +29,10 @@ import raccoonman.reterraforged.data.preset.PresetStructureRuleData;
 import raccoonman.reterraforged.data.preset.PresetStructureSets;
 import raccoonman.reterraforged.data.preset.PresetSurfaceLayerData;
 import raccoonman.reterraforged.registries.RTFRegistries;
+import raccoonman.reterraforged.world.worldgen.biome.modifier.BiomeModifier;
+import raccoonman.reterraforged.world.worldgen.noise.module.Noise;
+import raccoonman.reterraforged.world.worldgen.structure.rule.StructureRule;
+import raccoonman.reterraforged.world.worldgen.surface.rule.LayeredSurfaceRule;
 
 //TODO make this actually immutable when we rework the gui
 public record Preset(WorldSettings world, SurfaceSettings surface, CaveSettings caves, ClimateSettings climate, TerrainSettings terrain, RiverSettings rivers, FilterSettings filters, MiscellaneousSettings miscellaneous) {
@@ -68,7 +74,15 @@ public record Preset(WorldSettings world, SurfaceSettings surface, CaveSettings 
 //			TBNoiseRouterData.bootstrap(ctx);
 //		});
 		this.addPatch(builder, Registries.NOISE_SETTINGS, PresetNoiseGeneratorSettings::bootstrap);
-		return builder.buildPatch(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY), registries);
+
+		Cloner.Factory factory = new Cloner.Factory();
+		RegistryDataLoader.WORLDGEN_REGISTRIES.forEach(registryData -> registryData.runWithArguments(factory::addCodec));
+		factory.addCodec(RTFRegistries.NOISE, Noise.DIRECT_CODEC);
+		factory.addCodec(RTFRegistries.BIOME_MODIFIER, BiomeModifier.CODEC);
+		factory.addCodec(RTFRegistries.STRUCTURE_RULE, StructureRule.CODEC);
+		factory.addCodec(RTFRegistries.SURFACE_LAYERS, LayeredSurfaceRule.Layer.CODEC);
+		factory.addCodec(RTFRegistries.PRESET, Preset.CODEC);
+		return builder.buildPatch(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY), registries, factory).patches();
 	}
 	
 	private <T> void addPatch(RegistrySetBuilder builder, ResourceKey<? extends Registry<T>> key, Patch<T> patch) {
@@ -78,6 +92,6 @@ public record Preset(WorldSettings world, SurfaceSettings surface, CaveSettings 
     }
     
 	private interface Patch<T> {
-        void apply(Preset preset, BootstapContext<T> ctx);
+        void apply(Preset preset, BootstrapContext<T> ctx);
 	}
 }

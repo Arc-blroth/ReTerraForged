@@ -14,8 +14,8 @@ import raccoonman.reterraforged.client.gui.screen.presetconfig.PresetEditorPage;
 public class WidgetList<T extends AbstractWidget> extends ContainerObjectSelectionList<WidgetList.Entry<T>> {
 	private boolean renderSelected;
 	
-    public WidgetList(Minecraft minecraft, int i, int j, int k, int l, int slotHeight) {
-        super(minecraft, i, j, k, l, slotHeight);
+    public WidgetList(Minecraft minecraft, int i, int j, int k, int l) {
+        super(minecraft, i, j, k, l);
     }
     
     public void select(T widget) {

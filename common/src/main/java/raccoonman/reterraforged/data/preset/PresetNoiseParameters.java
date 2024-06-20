@@ -1,13 +1,13 @@
 package raccoonman.reterraforged.data.preset;
 
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 import raccoonman.reterraforged.data.preset.settings.Preset;
 
 public class PresetNoiseParameters {
 
-	public static void bootstrap(Preset preset, BootstapContext<NormalNoise.NoiseParameters> ctx) {
+	public static void bootstrap(Preset preset, BootstrapContext<NormalNoise.NoiseParameters> ctx) {
 //		TODO
 //		CaveSettings caveSettings = preset.caves();
 //		CaveSettings.Pillar pillars = caveSettings.pillars;
@@ -34,7 +34,7 @@ public class PresetNoiseParameters {
 //        );
 	}
 
-    private static void register(BootstapContext<NormalNoise.NoiseParameters> bootstapContext, ResourceKey<NormalNoise.NoiseParameters> resourceKey, int firstOctave, double initialAmplitude, double ... amplitudes) {
-        bootstapContext.register(resourceKey, new NormalNoise.NoiseParameters(firstOctave, initialAmplitude, amplitudes));
+    private static void register(BootstrapContext<NormalNoise.NoiseParameters> bootstrapContext, ResourceKey<NormalNoise.NoiseParameters> resourceKey, int firstOctave, double initialAmplitude, double ... amplitudes) {
+        bootstrapContext.register(resourceKey, new NormalNoise.NoiseParameters(firstOctave, initialAmplitude, amplitudes));
     }
 }

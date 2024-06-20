@@ -81,6 +81,7 @@ public abstract class LanguageProvider implements DataProvider {
         add(key.getDescriptionId(), name);
     }
 
+    /*
     public void addEnchantment(Supplier<? extends Enchantment> key, String name) {
         add(key.get(), name);
     }
@@ -89,7 +90,6 @@ public abstract class LanguageProvider implements DataProvider {
         add(key.getDescriptionId(), name);
     }
 
-    /*
     public void addBiome(Supplier<? extends Biome> key, String name) {
         add(key.get(), name);
     }

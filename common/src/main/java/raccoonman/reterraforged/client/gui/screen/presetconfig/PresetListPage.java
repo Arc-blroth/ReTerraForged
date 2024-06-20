@@ -18,7 +18,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DataResult.PartialResult;
 import com.mojang.serialization.JsonOps;
 
 import io.netty.util.internal.StringUtil;
@@ -27,7 +26,7 @@ import net.minecraft.Util;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds;
+import net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.GsonHelper;
 import raccoonman.reterraforged.RTFCommon;
@@ -121,7 +120,7 @@ class PresetListPage extends BisectedPage<PresetConfigScreen, PresetEntry, Abstr
 			this.screen.exportAsDatapack(path, preset);
 			this.rebuildPresets();
 			
-			Toasts.notify(RTFTranslationKeys.GUI_BUTTON_EXPORT_SUCCESS, Component.literal(path.toString()), SystemToastIds.WORLD_BACKUP);
+			Toasts.notify(RTFTranslationKeys.GUI_BUTTON_EXPORT_SUCCESS, Component.literal(path.toString()), SystemToastId.WORLD_BACKUP);
 		});
 
 		this.right.addWidget(this.input);
@@ -217,7 +216,7 @@ class PresetListPage extends BisectedPage<PresetConfigScreen, PresetEntry, Abstr
 				try(Reader reader = Files.newBufferedReader(presetPath)) {
 					String base = FileNameUtils.getBaseName(presetPath.toString());
 					DataResult<Preset> result = Preset.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseReader(reader));
-					Optional<PartialResult<Preset>> error = result.error();
+					Optional<DataResult.Error<Preset>> error = result.error();
 					if(error.isPresent()) {
 						RTFCommon.LOGGER.error(error.get().message());
 						continue;

@@ -37,6 +37,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.LevelAccessor;
@@ -307,7 +308,7 @@ public class FeatureTemplate {
 
     public static Optional<FeatureTemplate> load(HolderLookup<Block> blockLookup, InputStream data) {
         try {
-            CompoundTag root = NbtIo.readCompressed(data);
+            CompoundTag root = NbtIo.readCompressed(data, NbtAccounter.unlimitedHeap());
             if (!root.contains("palette") || !root.contains("blocks")) {
                 return Optional.empty();
             }

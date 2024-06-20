@@ -3,7 +3,6 @@ package raccoonman.reterraforged.data.preset.settings;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.util.ExtraCodecs.EitherCodec;
 import raccoonman.reterraforged.world.worldgen.biome.spawn.SpawnType;
 import raccoonman.reterraforged.world.worldgen.continent.ContinentType;
 import raccoonman.reterraforged.world.worldgen.continent.IslandPopulator;

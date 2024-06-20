@@ -3,7 +3,7 @@ package raccoonman.reterraforged.data.preset;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.world.level.levelgen.structure.BuiltinStructureSets;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
@@ -13,7 +13,7 @@ import raccoonman.reterraforged.data.preset.settings.StructureSettings;
 
 public class PresetStructureSets {
 
-	public static void bootstrap(Preset preset, BootstapContext<StructureSet> ctx) {
+	public static void bootstrap(Preset preset, BootstrapContext<StructureSet> ctx) {
 //		StructureSettings structureSettings = preset.structures();
 //
 //		HolderGetter<Structure> structures = ctx.lookup(Registries.STRUCTURE);

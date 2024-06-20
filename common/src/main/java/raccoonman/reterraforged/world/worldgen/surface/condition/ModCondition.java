@@ -1,6 +1,7 @@
 package raccoonman.reterraforged.world.worldgen.surface.condition;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.util.KeyDispatchDataCodec;
@@ -9,7 +10,7 @@ import net.minecraft.world.level.levelgen.SurfaceRules.Context;
 import raccoonman.reterraforged.platform.ModLoaderUtil;
 
 record ModCondition(String modId) implements SurfaceRules.ConditionSource {
-	public static final Codec<ModCondition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final MapCodec<ModCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.STRING.fieldOf("mod_id").forGetter(ModCondition::modId)
 	).apply(instance, ModCondition::new));
 	

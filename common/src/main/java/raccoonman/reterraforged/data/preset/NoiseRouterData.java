@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.TerrainProvider;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -66,56 +66,56 @@ public class NoiseRouterData {
     public static final ResourceKey<DensityFunction> SPAGHETTI_2D = NoiseRouterData.createKey("overworld/caves/spaghetti_2d");
 
     private static ResourceKey<DensityFunction> createKey(String string) {
-        return ResourceKey.create(Registries.DENSITY_FUNCTION, new ResourceLocation(string));
+        return ResourceKey.create(Registries.DENSITY_FUNCTION, ResourceLocation.withDefaultNamespace(string));
     }
 
-    public static Holder<? extends DensityFunction> bootstrap(BootstapContext<DensityFunction> bootstapContext) {
-        HolderGetter<NormalNoise.NoiseParameters> holderGetter = bootstapContext.lookup(Registries.NOISE);
-        HolderGetter<DensityFunction> holderGetter2 = bootstapContext.lookup(Registries.DENSITY_FUNCTION);
-        bootstapContext.register(ZERO, DensityFunctions.zero());
+    public static Holder<? extends DensityFunction> bootstrap(BootstrapContext<DensityFunction> bootstrapContext) {
+        HolderGetter<NormalNoise.NoiseParameters> holderGetter = bootstrapContext.lookup(Registries.NOISE);
+        HolderGetter<DensityFunction> holderGetter2 = bootstrapContext.lookup(Registries.DENSITY_FUNCTION);
+        bootstrapContext.register(ZERO, DensityFunctions.zero());
         int i = DimensionType.MIN_Y * 2;
         int j = DimensionType.MAX_Y * 2;
-        bootstapContext.register(Y, DensityFunctions.yClampedGradient(i, j, i, j));
-        DensityFunction densityFunction = NoiseRouterData.registerAndWrap(bootstapContext, SHIFT_X, DensityFunctions.flatCache(DensityFunctions.cache2d(DensityFunctions.shiftA(holderGetter.getOrThrow(Noises.SHIFT)))));
-        DensityFunction densityFunction2 = NoiseRouterData.registerAndWrap(bootstapContext, SHIFT_Z, DensityFunctions.flatCache(DensityFunctions.cache2d(DensityFunctions.shiftB(holderGetter.getOrThrow(Noises.SHIFT)))));
-        bootstapContext.register(BASE_3D_NOISE_OVERWORLD, BlendedNoise.createUnseeded(0.25, 0.125, 80.0, 160.0, 8.0));
-        bootstapContext.register(BASE_3D_NOISE_NETHER, BlendedNoise.createUnseeded(0.25, 0.375, 80.0, 60.0, 8.0));
-        bootstapContext.register(BASE_3D_NOISE_END, BlendedNoise.createUnseeded(0.25, 0.25, 80.0, 160.0, 4.0));
-        Holder.Reference<DensityFunction> holder = bootstapContext.register(CONTINENTS, DensityFunctions.flatCache(DensityFunctions.shiftedNoise2d(densityFunction, densityFunction2, 0.25, holderGetter.getOrThrow(Noises.CONTINENTALNESS))));
-        Holder.Reference<DensityFunction> holder2 = bootstapContext.register(EROSION, DensityFunctions.flatCache(DensityFunctions.shiftedNoise2d(densityFunction, densityFunction2, 0.25, holderGetter.getOrThrow(Noises.EROSION))));
-        DensityFunction densityFunction3 = NoiseRouterData.registerAndWrap(bootstapContext, RIDGES, DensityFunctions.flatCache(DensityFunctions.shiftedNoise2d(densityFunction, densityFunction2, 0.25, holderGetter.getOrThrow(Noises.RIDGE))));
-        bootstapContext.register(RIDGES_FOLDED, NoiseRouterData.peaksAndValleys(densityFunction3));
+        bootstrapContext.register(Y, DensityFunctions.yClampedGradient(i, j, i, j));
+        DensityFunction densityFunction = NoiseRouterData.registerAndWrap(bootstrapContext, SHIFT_X, DensityFunctions.flatCache(DensityFunctions.cache2d(DensityFunctions.shiftA(holderGetter.getOrThrow(Noises.SHIFT)))));
+        DensityFunction densityFunction2 = NoiseRouterData.registerAndWrap(bootstrapContext, SHIFT_Z, DensityFunctions.flatCache(DensityFunctions.cache2d(DensityFunctions.shiftB(holderGetter.getOrThrow(Noises.SHIFT)))));
+        bootstrapContext.register(BASE_3D_NOISE_OVERWORLD, BlendedNoise.createUnseeded(0.25, 0.125, 80.0, 160.0, 8.0));
+        bootstrapContext.register(BASE_3D_NOISE_NETHER, BlendedNoise.createUnseeded(0.25, 0.375, 80.0, 60.0, 8.0));
+        bootstrapContext.register(BASE_3D_NOISE_END, BlendedNoise.createUnseeded(0.25, 0.25, 80.0, 160.0, 4.0));
+        Holder.Reference<DensityFunction> holder = bootstrapContext.register(CONTINENTS, DensityFunctions.flatCache(DensityFunctions.shiftedNoise2d(densityFunction, densityFunction2, 0.25, holderGetter.getOrThrow(Noises.CONTINENTALNESS))));
+        Holder.Reference<DensityFunction> holder2 = bootstrapContext.register(EROSION, DensityFunctions.flatCache(DensityFunctions.shiftedNoise2d(densityFunction, densityFunction2, 0.25, holderGetter.getOrThrow(Noises.EROSION))));
+        DensityFunction densityFunction3 = NoiseRouterData.registerAndWrap(bootstrapContext, RIDGES, DensityFunctions.flatCache(DensityFunctions.shiftedNoise2d(densityFunction, densityFunction2, 0.25, holderGetter.getOrThrow(Noises.RIDGE))));
+        bootstrapContext.register(RIDGES_FOLDED, NoiseRouterData.peaksAndValleys(densityFunction3));
         DensityFunction densityFunction4 = DensityFunctions.noise(holderGetter.getOrThrow(Noises.JAGGED), 1500.0, 0.0);
-        NoiseRouterData.registerTerrainNoises(bootstapContext, holderGetter2, densityFunction4, holder, holder2, OFFSET, FACTOR, JAGGEDNESS, DEPTH, SLOPED_CHEESE, false);
-        Holder.Reference<DensityFunction> holder3 = bootstapContext.register(CONTINENTS_LARGE, DensityFunctions.flatCache(DensityFunctions.shiftedNoise2d(densityFunction, densityFunction2, 0.25, holderGetter.getOrThrow(Noises.CONTINENTALNESS_LARGE))));
-        Holder.Reference<DensityFunction> holder4 = bootstapContext.register(EROSION_LARGE, DensityFunctions.flatCache(DensityFunctions.shiftedNoise2d(densityFunction, densityFunction2, 0.25, holderGetter.getOrThrow(Noises.EROSION_LARGE))));
-        NoiseRouterData.registerTerrainNoises(bootstapContext, holderGetter2, densityFunction4, holder3, holder4, OFFSET_LARGE, FACTOR_LARGE, JAGGEDNESS_LARGE, DEPTH_LARGE, SLOPED_CHEESE_LARGE, false);
-        NoiseRouterData.registerTerrainNoises(bootstapContext, holderGetter2, densityFunction4, holder, holder2, OFFSET_AMPLIFIED, FACTOR_AMPLIFIED, JAGGEDNESS_AMPLIFIED, DEPTH_AMPLIFIED, SLOPED_CHEESE_AMPLIFIED, true);
-        bootstapContext.register(SLOPED_CHEESE_END, DensityFunctions.add(DensityFunctions.endIslands(0L), NoiseRouterData.getFunction(holderGetter2, BASE_3D_NOISE_END)));
-        bootstapContext.register(SPAGHETTI_ROUGHNESS_FUNCTION, NoiseRouterData.spaghettiRoughnessFunction(holderGetter));
-        bootstapContext.register(SPAGHETTI_2D_THICKNESS_MODULATOR, DensityFunctions.cacheOnce(DensityFunctions.mappedNoise(holderGetter.getOrThrow(Noises.SPAGHETTI_2D_THICKNESS), 2.0, 1.0, -0.6, -1.3)));
-        bootstapContext.register(SPAGHETTI_2D, NoiseRouterData.spaghetti2D(holderGetter2, holderGetter));
-        bootstapContext.register(ENTRANCES, NoiseRouterData.entrances(holderGetter2, holderGetter));
-        bootstapContext.register(NOODLE, NoiseRouterData.noodle(holderGetter2, holderGetter));
-        return bootstapContext.register(PILLARS, NoiseRouterData.pillars(holderGetter));
+        NoiseRouterData.registerTerrainNoises(bootstrapContext, holderGetter2, densityFunction4, holder, holder2, OFFSET, FACTOR, JAGGEDNESS, DEPTH, SLOPED_CHEESE, false);
+        Holder.Reference<DensityFunction> holder3 = bootstrapContext.register(CONTINENTS_LARGE, DensityFunctions.flatCache(DensityFunctions.shiftedNoise2d(densityFunction, densityFunction2, 0.25, holderGetter.getOrThrow(Noises.CONTINENTALNESS_LARGE))));
+        Holder.Reference<DensityFunction> holder4 = bootstrapContext.register(EROSION_LARGE, DensityFunctions.flatCache(DensityFunctions.shiftedNoise2d(densityFunction, densityFunction2, 0.25, holderGetter.getOrThrow(Noises.EROSION_LARGE))));
+        NoiseRouterData.registerTerrainNoises(bootstrapContext, holderGetter2, densityFunction4, holder3, holder4, OFFSET_LARGE, FACTOR_LARGE, JAGGEDNESS_LARGE, DEPTH_LARGE, SLOPED_CHEESE_LARGE, false);
+        NoiseRouterData.registerTerrainNoises(bootstrapContext, holderGetter2, densityFunction4, holder, holder2, OFFSET_AMPLIFIED, FACTOR_AMPLIFIED, JAGGEDNESS_AMPLIFIED, DEPTH_AMPLIFIED, SLOPED_CHEESE_AMPLIFIED, true);
+        bootstrapContext.register(SLOPED_CHEESE_END, DensityFunctions.add(DensityFunctions.endIslands(0L), NoiseRouterData.getFunction(holderGetter2, BASE_3D_NOISE_END)));
+        bootstrapContext.register(SPAGHETTI_ROUGHNESS_FUNCTION, NoiseRouterData.spaghettiRoughnessFunction(holderGetter));
+        bootstrapContext.register(SPAGHETTI_2D_THICKNESS_MODULATOR, DensityFunctions.cacheOnce(DensityFunctions.mappedNoise(holderGetter.getOrThrow(Noises.SPAGHETTI_2D_THICKNESS), 2.0, 1.0, -0.6, -1.3)));
+        bootstrapContext.register(SPAGHETTI_2D, NoiseRouterData.spaghetti2D(holderGetter2, holderGetter));
+        bootstrapContext.register(ENTRANCES, NoiseRouterData.entrances(holderGetter2, holderGetter));
+        bootstrapContext.register(NOODLE, NoiseRouterData.noodle(holderGetter2, holderGetter));
+        return bootstrapContext.register(PILLARS, NoiseRouterData.pillars(holderGetter));
     }
 
-    private static void registerTerrainNoises(BootstapContext<DensityFunction> bootstapContext, HolderGetter<DensityFunction> holderGetter, DensityFunction densityFunction, Holder<DensityFunction> holder, Holder<DensityFunction> holder2, ResourceKey<DensityFunction> resourceKey, ResourceKey<DensityFunction> resourceKey2, ResourceKey<DensityFunction> resourceKey3, ResourceKey<DensityFunction> resourceKey4, ResourceKey<DensityFunction> resourceKey5, boolean bl) {
+    private static void registerTerrainNoises(BootstrapContext<DensityFunction> bootstrapContext, HolderGetter<DensityFunction> holderGetter, DensityFunction densityFunction, Holder<DensityFunction> holder, Holder<DensityFunction> holder2, ResourceKey<DensityFunction> resourceKey, ResourceKey<DensityFunction> resourceKey2, ResourceKey<DensityFunction> resourceKey3, ResourceKey<DensityFunction> resourceKey4, ResourceKey<DensityFunction> resourceKey5, boolean bl) {
         DensityFunctions.Spline.Coordinate coordinate = new DensityFunctions.Spline.Coordinate(holder);
         DensityFunctions.Spline.Coordinate coordinate2 = new DensityFunctions.Spline.Coordinate(holder2);
         DensityFunctions.Spline.Coordinate coordinate3 = new DensityFunctions.Spline.Coordinate(holderGetter.getOrThrow(RIDGES));
         DensityFunctions.Spline.Coordinate coordinate4 = new DensityFunctions.Spline.Coordinate(holderGetter.getOrThrow(RIDGES_FOLDED));
-        DensityFunction densityFunction2 = NoiseRouterData.registerAndWrap(bootstapContext, resourceKey, NoiseRouterData.splineWithBlending(DensityFunctions.add(DensityFunctions.constant(-0.50375f), DensityFunctions.spline(TerrainProvider.overworldOffset(coordinate, coordinate2, coordinate4, bl))), DensityFunctions.blendOffset()));
-        DensityFunction densityFunction3 = NoiseRouterData.registerAndWrap(bootstapContext, resourceKey2, NoiseRouterData.splineWithBlending(DensityFunctions.spline(TerrainProvider.overworldFactor(coordinate, coordinate2, coordinate3, coordinate4, bl)), BLENDING_FACTOR));
-        DensityFunction densityFunction4 = NoiseRouterData.registerAndWrap(bootstapContext, resourceKey4, DensityFunctions.add(DensityFunctions.yClampedGradient(-64, 320, 1.5, -1.5), densityFunction2));
-        DensityFunction densityFunction5 = NoiseRouterData.registerAndWrap(bootstapContext, resourceKey3, NoiseRouterData.splineWithBlending(DensityFunctions.spline(TerrainProvider.overworldJaggedness(coordinate, coordinate2, coordinate3, coordinate4, bl)), BLENDING_JAGGEDNESS));
+        DensityFunction densityFunction2 = NoiseRouterData.registerAndWrap(bootstrapContext, resourceKey, NoiseRouterData.splineWithBlending(DensityFunctions.add(DensityFunctions.constant(-0.50375f), DensityFunctions.spline(TerrainProvider.overworldOffset(coordinate, coordinate2, coordinate4, bl))), DensityFunctions.blendOffset()));
+        DensityFunction densityFunction3 = NoiseRouterData.registerAndWrap(bootstrapContext, resourceKey2, NoiseRouterData.splineWithBlending(DensityFunctions.spline(TerrainProvider.overworldFactor(coordinate, coordinate2, coordinate3, coordinate4, bl)), BLENDING_FACTOR));
+        DensityFunction densityFunction4 = NoiseRouterData.registerAndWrap(bootstrapContext, resourceKey4, DensityFunctions.add(DensityFunctions.yClampedGradient(-64, 320, 1.5, -1.5), densityFunction2));
+        DensityFunction densityFunction5 = NoiseRouterData.registerAndWrap(bootstrapContext, resourceKey3, NoiseRouterData.splineWithBlending(DensityFunctions.spline(TerrainProvider.overworldJaggedness(coordinate, coordinate2, coordinate3, coordinate4, bl)), BLENDING_JAGGEDNESS));
         DensityFunction densityFunction6 = DensityFunctions.mul(densityFunction5, densityFunction.halfNegative());
         DensityFunction densityFunction7 = NoiseRouterData.noiseGradientDensity(densityFunction3, DensityFunctions.add(densityFunction4, densityFunction6));
-        bootstapContext.register(resourceKey5, DensityFunctions.add(densityFunction7, NoiseRouterData.getFunction(holderGetter, BASE_3D_NOISE_OVERWORLD)));
+        bootstrapContext.register(resourceKey5, DensityFunctions.add(densityFunction7, NoiseRouterData.getFunction(holderGetter, BASE_3D_NOISE_OVERWORLD)));
     }
 
-    public static DensityFunction registerAndWrap(BootstapContext<DensityFunction> bootstapContext, ResourceKey<DensityFunction> resourceKey, DensityFunction densityFunction) {
-        return new DensityFunctions.HolderHolder(bootstapContext.register(resourceKey, densityFunction));
+    public static DensityFunction registerAndWrap(BootstrapContext<DensityFunction> bootstrapContext, ResourceKey<DensityFunction> resourceKey, DensityFunction densityFunction) {
+        return new DensityFunctions.HolderHolder(bootstrapContext.register(resourceKey, densityFunction));
     }
 
     public static DensityFunction getFunction(HolderGetter<DensityFunction> holderGetter, ResourceKey<DensityFunction> resourceKey) {

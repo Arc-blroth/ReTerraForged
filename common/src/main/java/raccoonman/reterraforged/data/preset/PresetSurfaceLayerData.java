@@ -6,7 +6,7 @@ import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Block;
@@ -42,7 +42,7 @@ public class PresetSurfaceLayerData {
     private static final SurfaceRules.RuleSource GRAVEL = makeStateRule(Blocks.GRAVEL);
     private static final SurfaceRules.RuleSource SAND = makeStateRule(Blocks.SAND);
 	
-	public static void bootstrap(Preset preset, BootstapContext<LayeredSurfaceRule.Layer> ctx) {
+	public static void bootstrap(Preset preset, BootstrapContext<LayeredSurfaceRule.Layer> ctx) {
 		WorldSettings worldSettings = preset.world();
 		WorldSettings.Properties properties = worldSettings.properties;
 		

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.Holder;
@@ -15,7 +16,7 @@ import raccoonman.reterraforged.world.worldgen.noise.module.Noise;
 import raccoonman.reterraforged.world.worldgen.util.PosUtil;
 
 record NoiseRule(Holder<Noise> noise, List<Pair<Float, SurfaceRules.RuleSource>> rules) implements SurfaceRules.RuleSource {
-	public static final Codec<NoiseRule> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final MapCodec<NoiseRule> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Noise.CODEC.fieldOf("noise").forGetter(NoiseRule::noise),
 		entryCodec().listOf().fieldOf("rules").forGetter(NoiseRule::rules)
 	).apply(instance, NoiseRule::new));

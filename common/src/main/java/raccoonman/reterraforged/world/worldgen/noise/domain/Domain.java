@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import com.mojang.serialization.Codec;
 
+import com.mojang.serialization.MapCodec;
 import raccoonman.reterraforged.registries.RTFBuiltInRegistries;
 import raccoonman.reterraforged.world.worldgen.noise.module.Noise;
 
@@ -15,8 +16,8 @@ public interface Domain {
     float getOffsetZ(float x, float z, int seed);
     
     Domain mapAll(Noise.Visitor visitor);
-    
-    Codec<? extends Domain> codec();
+
+    MapCodec<? extends Domain> codec();
 
     default float getX(float x, float z, int seed) {
         return x + this.getOffsetX(x, z, seed);

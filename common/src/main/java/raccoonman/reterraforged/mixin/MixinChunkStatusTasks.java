@@ -5,6 +5,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
 
+import com.google.common.base.Suppliers;
+import net.minecraft.server.level.GenerationChunkHolder;
+import net.minecraft.util.StaticCache2D;
+import net.minecraft.world.level.biome.FeatureSorter;
+import net.minecraft.world.level.chunk.status.ChunkStep;
+import net.minecraft.world.level.chunk.status.WorldGenContext;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,26 +26,25 @@ import net.minecraft.server.level.ThreadedLevelLightEngine;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.status.ChunkStatusTasks;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import raccoonman.reterraforged.world.worldgen.GeneratorContext;
 import raccoonman.reterraforged.world.worldgen.RTFRandomState;
 import raccoonman.reterraforged.world.worldgen.WorldGenFlags;
 
-@Mixin(ChunkStatus.class)
-public class MixinChunkStatus {
+@Mixin(ChunkStatusTasks.class)
+public class MixinChunkStatusTasks {
 
 	//structure starts
 	@Inject(
 		at = @At("HEAD"),
-		method = "method_39464",
-		remap = false
+		method = "generateStructureStarts"
 	)
-	private static void method_39464$HEAD(ChunkStatus status, Executor executor, ServerLevel level, ChunkGenerator generator, StructureTemplateManager templateManager, ThreadedLevelLightEngine lightEngine, Function<ChunkAccess, CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>>> chunkLookup, List<ChunkAccess> regionChunks, ChunkAccess centerChunk, CallbackInfoReturnable<CompletableFuture<ChunkAccess>> callback) {
-		RandomState randomState = level.getChunkSource().randomState();
+	private static void generateStructureStarts$HEAD(WorldGenContext worldGenContext, ChunkStep chunkStep, StaticCache2D<GenerationChunkHolder> staticCache2D, ChunkAccess chunkAccess, CallbackInfoReturnable<CompletableFuture<ChunkAccess>> callback) {
+		RandomState randomState = worldGenContext.level().getChunkSource().randomState();
 		if((Object) randomState instanceof RTFRandomState rtfRandomState) {
-			ChunkPos chunkPos = centerChunk.getPos();
+			ChunkPos chunkPos = chunkAccess.getPos();
 			@Nullable
 			GeneratorContext context = rtfRandomState.generatorContext();
 			
@@ -53,11 +58,10 @@ public class MixinChunkStatus {
 	
 	@Inject(
 		at = @At("TAIL"),
-		method = "method_39464",
-		remap = false
+		method = "generateStructureStarts"
 	)
-	private static void method_39464$TAIL(ChunkStatus status, Executor executor, ServerLevel level, ChunkGenerator generator, StructureTemplateManager templateManager, ThreadedLevelLightEngine lightEngine, Function<ChunkAccess, CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>>> chunkLookup, List<ChunkAccess> regionChunks, ChunkAccess centerChunk, CallbackInfoReturnable<CompletableFuture<ChunkAccess>> callback) {
-		RandomState randomState = level.getChunkSource().randomState();
+	private static void generateStructureStarts$TAIL(WorldGenContext worldGenContext, ChunkStep chunkStep, StaticCache2D<GenerationChunkHolder> staticCache2D, ChunkAccess chunkAccess, CallbackInfoReturnable<CompletableFuture<ChunkAccess>> callback) {
+		RandomState randomState = worldGenContext.level().getChunkSource().randomState();
 		if((Object) randomState instanceof RTFRandomState rtfRandomState) {
 			@Nullable
 			GeneratorContext context = rtfRandomState.generatorContext();
@@ -66,17 +70,16 @@ public class MixinChunkStatus {
 			}
 		}
 	}
-	
+
 	//features
 	@Inject(
 		at = @At("TAIL"),
-		method = "method_51375",
-		remap = false
+		method = "generateFeatures"
 	)
-	private static void method_51375(ChunkStatus status, ServerLevel level, ChunkGenerator generator, List<ChunkAccess> chunks, ChunkAccess centerChunk, CallbackInfo callback) {
-		RandomState randomState = level.getChunkSource().randomState();
+	private static void generateFeatures(WorldGenContext worldGenContext, ChunkStep chunkStep, StaticCache2D<GenerationChunkHolder> staticCache2D, ChunkAccess chunkAccess, CallbackInfoReturnable<CompletableFuture<ChunkAccess>> callback) {
+		RandomState randomState = worldGenContext.level().getChunkSource().randomState();
 		if((Object) randomState instanceof RTFRandomState rtfRandomState) {
-			ChunkPos chunkPos = centerChunk.getPos();
+			ChunkPos chunkPos = chunkAccess.getPos();
 			@Nullable
 			GeneratorContext context = rtfRandomState.generatorContext();
 			

@@ -1,2 +1,3 @@
-# ReTerraForged
-a 1.19+ continuation of https://github.com/TerraForged/TerraForged
+# arc's fork of ReTerraForged
+
+**do not report bugs with this fork to the original authors**

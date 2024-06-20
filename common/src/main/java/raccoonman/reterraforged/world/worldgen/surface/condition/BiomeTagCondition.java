@@ -1,6 +1,6 @@
 package raccoonman.reterraforged.world.worldgen.surface.condition;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.HolderLookup.RegistryLookup;
@@ -14,7 +14,7 @@ import net.minecraft.world.level.levelgen.SurfaceRules.Context;
 import raccoonman.reterraforged.world.worldgen.RTFRandomState;
 
 record BiomeTagCondition(TagKey<Biome> tag) implements SurfaceRules.ConditionSource {
-	public static final Codec<BiomeTagCondition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final MapCodec<BiomeTagCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		TagKey.hashedCodec(Registries.BIOME).fieldOf("tag").forGetter(BiomeTagCondition::tag)
 	).apply(instance, BiomeTagCondition::new));
 	

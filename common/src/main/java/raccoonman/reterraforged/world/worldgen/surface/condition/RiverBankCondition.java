@@ -1,6 +1,6 @@
 package raccoonman.reterraforged.world.worldgen.surface.condition;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.Holder;
@@ -22,7 +22,7 @@ class RiverBankCondition extends ThresholdCondition {
 	}
 	
 	public record Source(Holder<Noise> threshold, Holder<Noise> variance) implements SurfaceRules.ConditionSource {
-		public static final Codec<Source> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<Source> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			Noise.CODEC.fieldOf("threshold").forGetter(Source::threshold),
 			Noise.CODEC.fieldOf("variance").forGetter(Source::variance)
 		).apply(instance, Source::new));

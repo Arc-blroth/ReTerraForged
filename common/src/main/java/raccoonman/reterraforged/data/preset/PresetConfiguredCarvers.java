@@ -2,7 +2,7 @@ package raccoonman.reterraforged.data.preset;
 
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.Carvers;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.valueproviders.ConstantFloat;
@@ -23,7 +23,7 @@ import raccoonman.reterraforged.data.preset.settings.Preset;
 public class PresetConfiguredCarvers {
 
 	//TODO make lava level configurable
-	public static void bootstrap(Preset preset, BootstapContext<ConfiguredWorldCarver<?>> ctx) {
+	public static void bootstrap(Preset preset, BootstrapContext<ConfiguredWorldCarver<?>> ctx) {
 		CaveSettings caveSettings = preset.caves();
         HolderGetter<Block> blocks = ctx.lookup(Registries.BLOCK);
         

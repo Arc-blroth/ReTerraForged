@@ -9,7 +9,10 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Optional;
 
+import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackSelectionConfig;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.chat.Component;
@@ -24,6 +27,7 @@ import net.minecraft.server.packs.repository.Pack.ResourcesSupplier;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.world.level.validation.DirectoryValidator;
 import raccoonman.reterraforged.RTFCommon;
+import raccoonman.reterraforged.client.data.RTFTranslationKeys;
 
 public class RTFBuiltinPackSource extends BuiltInPackSource {
 	private static final ResourceLocation PACKS_DIR = RTFCommon.location("datapacks");
@@ -45,7 +49,12 @@ public class RTFBuiltinPackSource extends BuiltInPackSource {
 
 	@Override
 	protected Pack createBuiltinPack(String title, ResourcesSupplier resourceSupplier, Component description) {
-        return Pack.readMetaAndCreate(title, description, false, resourceSupplier, PackType.SERVER_DATA, Pack.Position.TOP, PackSource.FEATURE);
+        return Pack.readMetaAndCreate(
+			new PackLocationInfo(title, description, PackSource.FEATURE, Optional.empty()),
+			resourceSupplier,
+			PackType.SERVER_DATA,
+			new PackSelectionConfig(false, Pack.Position.TOP, false)
+		);
 	}
 
 	private static VanillaPackResources createRTFPackSource() {
@@ -68,7 +77,14 @@ public class RTFBuiltinPackSource extends BuiltInPackSource {
 				RTFCommon.LOGGER.error("Couldn't resolve path to assets", exception);
 			}	
 		}
-        return builder.applyDevelopmentConfig().build();
+        return builder.applyDevelopmentConfig().build(
+			new PackLocationInfo(
+				RTFCommon.MOD_ID,
+				Component.translatable(RTFTranslationKeys.METADATA_DESCRIPTION),
+				PackSource.BUILT_IN,
+				Optional.empty()
+			)
+		);
 	}
 
     private static Path safeGetPath(URI uRI) throws IOException {

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.util.KeyDispatchDataCodec;
@@ -33,7 +34,7 @@ public class TBSurfaceRules {
 		private static final Supplier<Map<String, RuleCategory>> BY_KEY = Suppliers.memoize(() -> 
 			Arrays.stream(RuleCategory.values()).collect(Collectors.toMap(RuleCategory::name, Function.identity()))
 		);
-		public static final Codec<TBRule> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<TBRule> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			Codec.STRING.fieldOf("category").forGetter(TBRule::category),
 			Codec.STRING.fieldOf("mod_id").forGetter(TBRule::modId)
 		).apply(instance, TBRule::new));

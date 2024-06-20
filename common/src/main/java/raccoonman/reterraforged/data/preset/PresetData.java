@@ -1,6 +1,6 @@
 package raccoonman.reterraforged.data.preset;
 
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import raccoonman.reterraforged.data.preset.settings.Preset;
 import raccoonman.reterraforged.registries.RTFRegistries;
@@ -9,7 +9,7 @@ import raccoonman.reterraforged.registries.RTFRegistries;
 public class PresetData {
 	public static final ResourceKey<Preset> PRESET = RTFRegistries.createKey(RTFRegistries.PRESET, "preset");
 	
-	public static void bootstrap(Preset preset, BootstapContext<Preset> ctx) {
+	public static void bootstrap(Preset preset, BootstrapContext<Preset> ctx) {
 		ctx.register(PRESET, preset);
 	}
 }

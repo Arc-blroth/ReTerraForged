@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
@@ -56,7 +57,7 @@ public class RTFPlacementModifiers {
     	return new LegacyCountExtraModifier(count, extraChance, extraCount);
     }
     
-    private static <P extends PlacementModifier> PlacementModifierType<P> register(String name, Codec<P> codec) {
+    private static <P extends PlacementModifier> PlacementModifierType<P> register(String name, MapCodec<P> codec) {
     	PlacementModifierType<P> type = () -> codec;
 		RegistryUtil.register(BuiltInRegistries.PLACEMENT_MODIFIER_TYPE, name, type);
 		return type;

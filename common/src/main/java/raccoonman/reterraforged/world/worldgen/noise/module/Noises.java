@@ -5,6 +5,7 @@ import java.util.function.Function;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import raccoonman.reterraforged.platform.RegistryUtil;
 import raccoonman.reterraforged.registries.RTFBuiltInRegistries;
@@ -415,7 +416,7 @@ public class Noises {
 		return new CellSampler.Marker(field);
 	}
  
-	private static void register(String name, Codec<? extends Noise> value) {
+	private static void register(String name, MapCodec<? extends Noise> value) {
 		RegistryUtil.register(RTFBuiltInRegistries.NOISE_TYPE, name, value);
 	}
 	
@@ -442,7 +443,7 @@ public class Noises {
 		}
 
 		@Override
-		public Codec<HolderHolder> codec() {
+		public MapCodec<HolderHolder> codec() {
 			throw new UnsupportedOperationException("Called .codec() on HolderHolder");
 		}
 	}

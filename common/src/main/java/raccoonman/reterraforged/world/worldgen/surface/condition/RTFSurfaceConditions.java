@@ -3,7 +3,7 @@ package raccoonman.reterraforged.world.worldgen.surface.condition;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -102,7 +102,7 @@ public class RTFSurfaceConditions {
 		return new HeightModificationDetection.Source(target);
 	}
 	
-	public static void register(String name, Codec<? extends SurfaceRules.ConditionSource> value) {
+	public static void register(String name, MapCodec<? extends SurfaceRules.ConditionSource> value) {
 		RegistryUtil.register(BuiltInRegistries.MATERIAL_CONDITION, name, value);
 	}
 	

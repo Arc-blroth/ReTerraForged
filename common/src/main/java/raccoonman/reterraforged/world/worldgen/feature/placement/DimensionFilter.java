@@ -3,6 +3,7 @@ package raccoonman.reterraforged.world.worldgen.feature.placement;
 import java.util.List;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.BlockPos;
@@ -18,7 +19,7 @@ import net.minecraft.world.level.levelgen.placement.PlacementFilter;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 
 class DimensionFilter extends PlacementFilter {
-	public static final Codec<DimensionFilter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final MapCodec<DimensionFilter> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		ResourceKey.codec(Registries.LEVEL_STEM).listOf().fieldOf("blacklist").forGetter((filter) -> filter.blacklist)
 	).apply(instance, DimensionFilter::new));
 	

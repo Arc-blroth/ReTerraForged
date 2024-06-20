@@ -1,6 +1,7 @@
 package raccoonman.reterraforged.world.worldgen.feature.placement;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.BlockPos;
@@ -12,7 +13,7 @@ import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import raccoonman.reterraforged.world.worldgen.noise.module.Noise;
 
 class NoiseFilter extends PlacementFilter {
-	public static final Codec<NoiseFilter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final MapCodec<NoiseFilter> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Noise.CODEC.fieldOf("noise").forGetter((filter) -> filter.noise),
 		Codec.FLOAT.fieldOf("threshold").forGetter((filter) -> filter.threshold)
 	).apply(instance, NoiseFilter::new));

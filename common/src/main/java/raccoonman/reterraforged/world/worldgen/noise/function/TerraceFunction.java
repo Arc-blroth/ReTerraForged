@@ -1,12 +1,13 @@
 package raccoonman.reterraforged.world.worldgen.noise.function;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import raccoonman.reterraforged.world.worldgen.noise.NoiseUtil;
 
 record TerraceFunction(float inputRange, float ramp, float cliff, float rampHeight, float blendRange, Step[] steps) implements CurveFunction {
-	public static final Codec<TerraceFunction> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final MapCodec<TerraceFunction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.FLOAT.fieldOf("input_range").forGetter(TerraceFunction::inputRange),
 		Codec.FLOAT.fieldOf("ramp").forGetter(TerraceFunction::ramp),
 		Codec.FLOAT.fieldOf("cliff").forGetter(TerraceFunction::cliff),
@@ -54,7 +55,7 @@ record TerraceFunction(float inputRange, float ramp, float cliff, float rampHeig
 	}
 	
 	@Override
-	public Codec<TerraceFunction> codec() {
+	public MapCodec<TerraceFunction> codec() {
 		return CODEC;
 	}
 	
