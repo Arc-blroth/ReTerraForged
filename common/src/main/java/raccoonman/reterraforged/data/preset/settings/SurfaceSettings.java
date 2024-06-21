@@ -18,13 +18,13 @@ public record SurfaceSettings(Erosion erosion) {
     		Codec.INT.fieldOf("rockMin").forGetter((o) -> o.rockMin),
     		Codec.INT.fieldOf("dirtVariance").forGetter((o) -> o.dirtVariance),
     		Codec.INT.fieldOf("dirtMin").forGetter((o) -> o.dirtMin),
-    		Codec.INT.fieldOf("snowHeight").forGetter((o) -> o.snowHeight),
+    		Codec.INT.optionalFieldOf("snowHeight", 95).forGetter((o) -> o.snowHeight),
     		Codec.FLOAT.fieldOf("rockSteepness").forGetter((o) -> o.rockSteepness),
     		Codec.FLOAT.fieldOf("dirtSteepness").forGetter((o) -> o.dirtSteepness),
     		Codec.FLOAT.fieldOf("screeSteepness").forGetter((o) -> o.screeSteepness),
-    		Codec.FLOAT.fieldOf("snowSteepness").forGetter((o) -> o.snowSteepness),
-    		Codec.FLOAT.fieldOf("heightModifier").forGetter((o) -> o.heightModifier),
-    		Codec.FLOAT.fieldOf("slopeModifier").forGetter((o) -> o.slopeModifier)
+    		Codec.FLOAT.optionalFieldOf("snowSteepness", 0.45f).forGetter((o) -> o.snowSteepness),
+    		Codec.FLOAT.optionalFieldOf("heightModifier", 6.0f).forGetter((o) -> o.heightModifier),
+    		Codec.FLOAT.optionalFieldOf("slopeModifier", 3.0f).forGetter((o) -> o.slopeModifier)
     	).apply(instance, Erosion::new));
     	
     	public int rockVariance; 

@@ -2,18 +2,18 @@
   "schemaVersion": 1,
   "id": "reterraforged",
   "version": "${version}",
-  "name": "ReTerraForged",
-  "description": "A continuation of https://github.com/TerraForged/TerraForged",
+  "name": "ReTerraForged (Arc's Fork)",
+  "description": "A fork of https://github.com/TerraForged/TerraForged",
   "authors": [
 	"dags",
 	"Won-Ton",
 	"racconman",
 	"Steveplays28",
-	"EdoEquin0x"
+	"EdoEquin0x",
+    "Arc'blroth"
   ],
   "contact": {
-    "repo": "https://github.com/racoonman2/reterraforged/",
-    "issues": "https://github.com/racoonman2/reterraforged/issues"
+    "repo": "https://github.com/Arc-blroth/ReTerraForged/"
   },
   "license": "MIT",
   "environment": "*",
