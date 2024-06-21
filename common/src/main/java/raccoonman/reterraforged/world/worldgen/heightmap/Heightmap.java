@@ -1,19 +1,15 @@
 package raccoonman.reterraforged.world.worldgen.heightmap;
 
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderGetter;
-import net.minecraft.world.level.chunk.ChunkGenerator;
-import raccoonman.reterraforged.data.preset.PresetTerrainNoise;
 import raccoonman.reterraforged.data.preset.settings.Preset;
 import raccoonman.reterraforged.data.preset.settings.TerrainSettings;
 import raccoonman.reterraforged.data.preset.settings.WorldSettings;
 import raccoonman.reterraforged.data.preset.settings.WorldSettings.ControlPoints;
 import raccoonman.reterraforged.world.worldgen.GeneratorContext;
 import raccoonman.reterraforged.world.worldgen.biome.Continentalness;
+import raccoonman.reterraforged.world.worldgen.biome.Erosion;
+import raccoonman.reterraforged.world.worldgen.biome.Weirdness;
 import raccoonman.reterraforged.world.worldgen.cell.Cell;
-import raccoonman.reterraforged.world.worldgen.cell.CellField;
 import raccoonman.reterraforged.world.worldgen.cell.CellPopulator;
-import raccoonman.reterraforged.world.worldgen.cell.noise.CellSampler;
 import raccoonman.reterraforged.world.worldgen.climate.Climate;
 import raccoonman.reterraforged.world.worldgen.continent.Continent;
 import raccoonman.reterraforged.world.worldgen.continent.ContinentLerper2;
@@ -22,115 +18,93 @@ import raccoonman.reterraforged.world.worldgen.noise.NoiseUtil;
 import raccoonman.reterraforged.world.worldgen.noise.function.DistanceFunction;
 import raccoonman.reterraforged.world.worldgen.noise.function.EdgeFunction;
 import raccoonman.reterraforged.world.worldgen.noise.function.Interpolation;
-import raccoonman.reterraforged.world.worldgen.noise.module.Cache2d;
 import raccoonman.reterraforged.world.worldgen.noise.module.Noise;
 import raccoonman.reterraforged.world.worldgen.noise.module.Noises;
 import raccoonman.reterraforged.world.worldgen.rivermap.Rivermap;
-import raccoonman.reterraforged.world.worldgen.terrain.MountainChainPopulator;
-import raccoonman.reterraforged.world.worldgen.terrain.TerrainCategory;
-import raccoonman.reterraforged.world.worldgen.terrain.TerrainProvider;
+import raccoonman.reterraforged.world.worldgen.terrain.Blender;
 import raccoonman.reterraforged.world.worldgen.terrain.TerrainType;
 import raccoonman.reterraforged.world.worldgen.terrain.populator.Populators;
 import raccoonman.reterraforged.world.worldgen.terrain.populator.VolcanoPopulator;
+import raccoonman.reterraforged.world.worldgen.terrain.provider.TerrainProvider;
 import raccoonman.reterraforged.world.worldgen.terrain.region.RegionLerper;
 import raccoonman.reterraforged.world.worldgen.terrain.region.RegionModule;
 import raccoonman.reterraforged.world.worldgen.terrain.region.RegionSelector;
 import raccoonman.reterraforged.world.worldgen.util.Seed;
 
-//TODO rework this whole class
-public record Heightmap(CellSampler.Provider cellProvider, CellPopulator terrain, CellPopulator region, Continent continent, Climate climate, Levels levels, ControlPoints controlPoints, float terrainFrequency, @Deprecated Noise mountainChainAlpha, @Deprecated Noise beachAlpha) { //TODO move noise fields to RegionModule
+public record Heightmap(CellPopulator terrain, CellPopulator region, Continent continent, Climate climate, Levels levels, ControlPoints controlPoints, float terrainFrequency, Noise beachNoise) {
 	
-	//TODO move this to a factory or something instead
-	public Heightmap cache() {
-		//TODO map the rest of the noise as well once this is fully working
-		CellSampler.Provider cellProvider = new CellSampler.Provider();
-		return new Heightmap(cellProvider, this.terrain.mapNoise((noise) -> {
-			if(noise instanceof Cache2d	cache2d) {
-				return new Cache2d.Cached(cache2d.noise());
-			}
-			return cellProvider.apply(noise);
-		}), this.region, this.continent, this.climate, this.levels, this.controlPoints, this.terrainFrequency, this.mountainChainAlpha, this.beachAlpha);
+	public void apply(Cell cell, float x, float z) {
+		this.applyTerrain(cell, x, z);
+		this.applyRivers(cell, x, z, this.continent.getRivermap(cell));
+		this.applyClimate(cell, x, z);
 	}
 	
-	public void applyContinent(Cell cell, float x, float z) {
-        this.continent.apply(cell, x, z);
-	}
-	
-	public void applyTerrain(Cell cell, float x, float z, Rivermap rivermap) {
+	public void applyTerrain(Cell cell, float x, float z) {
         cell.terrain = TerrainType.PLAINS;
-        cell.riverDistance = 1.0F;
-        cell.mountainChainAlpha = this.mountainChainAlpha.compute(x, z, 0);
-        
-        rivermap.apply(cell, x, z);
-        this.region.apply(cell, x, z);
-        
-        float mountainMask = NoiseUtil.map(cell.mountainChainAlpha, 0.45F, 0.65F);
-        cell.terrainMask = Math.min(cell.terrainMask + mountainMask, 1.0F);
-        
-        this.terrain.apply(cell, x * this.terrainFrequency, z * this.terrainFrequency);
+        cell.beachNoise = this.beachNoise.compute(x, z, 0);
 
+        this.continent.apply(cell, x, z);
+        this.region.apply(cell, x, z);
+        this.terrain.apply(cell, x * this.terrainFrequency, z * this.terrainFrequency);
+	}
+	
+	public void applyRivers(Cell cell, float x, float z, Rivermap rivermap) {
+        rivermap.apply(cell, x, z);
         VolcanoPopulator.modifyVolcanoType(cell, this.levels);
 	}
 	
 	public void applyClimate(Cell cell, float x, float z) {
     	cell.weirdness = -cell.weirdness;
-
+    	
 		float riverValleyThreshold = 0.675F;
-//        if(cell.riverDistance < riverValleyThreshold) {
-//        	cell.erosion = 0.445F;
-//        	cell.weirdness = 0.34F;
-//        }
-//
-//        if(cell.terrain.isRiver()) {
-//            cell.erosion = -0.05F;
-//            cell.weirdness = -0.03F;
-//        }
-//
-//        if(cell.terrain.isLake() && cell.height < this.levels.water) {
-//            cell.erosion = Erosion.LEVEL_4.midpoint();
-//            cell.weirdness = -0.03F;
-//        }
+        if(cell.riverDistance < riverValleyThreshold) {
+        	cell.erosion = 0.4F;
+        	cell.weirdness = 0.1F;// NoiseUtil.lerp(cell.weirdness, Weirdness.LOW_SLICE_NORMAL_DESCENDING.midpoint(), 1.0F - cell.riverDistance);
+//        	cell.erosion = NoiseUtil.lerp(cell.erosion, Erosion.LEVEL_3.mid(), 1.0F - cell.riverMask);
+        }
+
+        if(cell.terrain.isRiver()) {
+        	cell.weirdness = 0.0F;
+        }
 //        
-//        if(cell.terrain.isWetland()) {
-//        	cell.erosion = Erosion.LEVEL_6.midpoint();
-//        	cell.weirdness = Weirdness.VALLEY.midpoint();
-//        }
+        if(cell.terrain.isLake() && cell.height < this.levels.water) {
+            cell.erosion = Erosion.LEVEL_4.midpoint();
+            cell.weirdness = -0.03F;
+        }
+        
+        if(cell.terrain.isWetland()) {
+        	cell.erosion = Erosion.LEVEL_6.midpoint();
+        	cell.weirdness = Weirdness.VALLEY.midpoint();
+        }
         
         this.climate.apply(cell, x, z);
-	}
-	
-	public void applyPost(Cell cell, float x, float z) {
+
 		float deepOcean = this.controlPoints.deepOcean;
 		float shallowOcean = this.controlPoints.shallowOcean;
 		float beach = this.controlPoints.beach;
+		float coast = this.controlPoints.coast;
 		float nearInland = this.controlPoints.nearInland;
 		float midInland = this.controlPoints.midInland;
 		float farInland = this.controlPoints.farInland;
 		
-		float continentNoise = cell.continentNoise;
+		float continentalness = cell.continentalness;
 		
-		if(continentNoise <= deepOcean || cell.terrain.isDeepOcean()) {
-			float alpha = NoiseUtil.map(continentNoise, 0.0F, deepOcean);
+		if(continentalness <= deepOcean || cell.terrain.isDeepOcean()) {
+			float alpha = NoiseUtil.map(continentalness, 0.0F, deepOcean);
 			cell.continentalness = Continentalness.DEEP_OCEAN.lerp(alpha);
-		} else if(continentNoise <= shallowOcean || cell.terrain.isShallowOcean()) {
-			float alpha = NoiseUtil.map(continentNoise, deepOcean, shallowOcean);
+		} else if(continentalness <= shallowOcean || cell.terrain.isShallowOcean()) {
+			float alpha = NoiseUtil.map(continentalness, deepOcean, shallowOcean);
 			cell.continentalness = Continentalness.OCEAN.lerp(alpha);
-		} else if(continentNoise <= nearInland) {
-			float alpha = NoiseUtil.map(continentNoise, shallowOcean, nearInland);
+		} else if(continentalness <= nearInland) {
+			float alpha = NoiseUtil.map(continentalness, shallowOcean, nearInland);
 			cell.continentalness = Continentalness.NEAR_INLAND.lerp(alpha);
-		} else if(continentNoise <= midInland) {
-			float alpha = NoiseUtil.map(continentNoise, nearInland, midInland);
+		} else if(continentalness <= midInland) {
+			float alpha = NoiseUtil.map(continentalness, nearInland, midInland);
 			cell.continentalness = NoiseUtil.lerp(Continentalness.MID_INLAND.min(), Continentalness.MID_INLAND.max(), alpha);
 		} else {
-			float alpha = NoiseUtil.map(continentNoise, midInland, farInland);
+			float alpha = NoiseUtil.map(continentalness, midInland, farInland);
 			alpha = Math.min(alpha, 1.0F);
 			cell.continentalness = NoiseUtil.lerp(Continentalness.FAR_INLAND.min(), Continentalness.FAR_INLAND.max(), alpha);
-		}
-		
-		if(cell.terrain.getDelegate() == TerrainCategory.BEACH && cell.height + this.beachAlpha.compute(x, z, 0) < this.levels.water(5)) {
-			float alpha = NoiseUtil.clamp(cell.continentEdge, shallowOcean, beach);
-			alpha = NoiseUtil.lerp(alpha, shallowOcean, beach, 0.0F, 1.0F);
-			cell.continentalness = NoiseUtil.lerp(Continentalness.COAST.min(), Continentalness.COAST.max(), alpha);
 		}
 	}
 	
@@ -159,27 +133,23 @@ public record Heightmap(CellSampler.Provider cellProvider, CellPopulator terrain
         CellPopulator region = new RegionModule(regionConfig);
 
         Seed mountainSeed = ctx.seed.offset(general.terrainSeedOffset);
-        Noise mountainChainAlpha = Noises.worleyEdge(mountainSeed.next(), 1000, EdgeFunction.DISTANCE_2_ADD, DistanceFunction.EUCLIDEAN);
-        mountainChainAlpha = Noises.warpPerlin(mountainChainAlpha, mountainSeed.next(), 333, 2, 250.0F);
-        mountainChainAlpha = Noises.curve(mountainChainAlpha, Interpolation.CURVE3);
-        mountainChainAlpha = Noises.clamp(mountainChainAlpha, 0.0F, 0.9F);
-        mountainChainAlpha = Noises.map(mountainChainAlpha, 0.0F, 1.0F);
+        Noise mountainShape = Noises.worleyEdge(mountainSeed.next(), 1000, EdgeFunction.DISTANCE_2_ADD, DistanceFunction.EUCLIDEAN);
+        mountainShape = Noises.warpPerlin(mountainShape, mountainSeed.next(), 333, 2, 250.0F);
+        mountainShape = Noises.curve(mountainShape, Interpolation.CURVE3);
+        mountainShape = Noises.clamp(mountainShape, 0.0F, 0.9F);
+        mountainShape = Noises.map(mountainShape, 0.0F, 1.0F);
 
-        int groundVariance = 25;
-		Noise ground = Noises.cell(CellField.CONTINENT_NOISE);
-		ground = Noises.clamp(ground, controlPoints.coast, controlPoints.farInland);
-		ground = Noises.map(ground, 0.0F, 1.0F);
-		ground = Noises.mul(ground, levels.scale(groundVariance));
-		ground = Noises.add(ground, levels.ground);
-		
+		Noise ground = Noises.constant(levels.ground);
+
         CellPopulator terrainRegions = new RegionSelector(TerrainProvider.generateTerrain(ctx.seed, terrainSettings, regionConfig, levels, ground));
+//        terrainRegions = Populators.makeMountainCliffs(TerrainType.MOUNTAIN_CLIFFS, new Seed(0), ground, terrainSettings.mountains, globalVerticalScale);
         CellPopulator terrainRegionBorders = Populators.makeBorder(ctx.seed, ground, terrainSettings.plains, terrainSettings.steppe, globalVerticalScale);
         
         CellPopulator terrainBlend = new RegionLerper(terrainRegionBorders, terrainRegions);
-        CellPopulator mountains = Populators.makeMountainChain(mountainSeed, ground, terrainSettings.mountains, globalVerticalScale, general.fancyMountains);
+        CellPopulator mountains = Populators.makeMountainChain(mountainSeed, ground, terrainSettings.mountains, terrainSettings.general.legacyWorldGen ? globalVerticalScale : globalVerticalScale * terrainSettings.mountains.verticalScale, general.fancyMountains, general.legacyWorldGen);
         Continent continent = worldSettings.continent.continentType.create(ctx.seed, ctx);
         Climate climate = Climate.make(continent, ctx);
-        CellPopulator land = new MountainChainPopulator(terrainBlend, mountains, 0.3F, 0.8F);
+        CellPopulator land = new Blender(mountainShape, terrainBlend, mountains, 0.3F, 0.8F, 0.575F);
         
         CellPopulator deepOcean = Populators.makeDeepOcean(ctx.seed.next(), levels.water);
         CellPopulator shallowOcean = Populators.makeShallowOcean(ctx.levels);
@@ -190,8 +160,6 @@ public record Heightmap(CellSampler.Provider cellProvider, CellPopulator terrain
        
         Noise beachNoise = Noises.perlin2(ctx.seed.next(), 20, 1);
         beachNoise = Noises.mul(beachNoise, ctx.levels.scale(5));
-        
-        CellSampler.Provider cellProvider = new CellSampler.Provider();
-        return new Heightmap(cellProvider, terrain.mapNoise(cellProvider), region, continent, climate, levels, controlPoints, terrainFrequency, mountainChainAlpha, beachNoise);
+        return new Heightmap(terrain, region, continent, climate, levels, controlPoints, terrainFrequency, beachNoise);
 	}
 }

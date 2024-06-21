@@ -4,26 +4,25 @@ import raccoonman.reterraforged.data.preset.settings.FilterSettings;
 import raccoonman.reterraforged.world.worldgen.cell.Cell;
 import raccoonman.reterraforged.world.worldgen.heightmap.Levels;
 import raccoonman.reterraforged.world.worldgen.noise.NoiseUtil;
-import raccoonman.reterraforged.world.worldgen.tile.Tile;
 
 public record Smoothing(float smoothingRadius, float smoothingRate, Modifier modifier) implements Filter {
 
 	@Override
-	public void apply(Tile tile, int seedX, int seedZ, int iterations) {
+	public void apply(Filterable map, int seedX, int seedZ, int iterations) {
 		while (iterations-- > 0) {
-			this.apply(tile);
+			this.apply(map);
 		}
 	}
 
-	private void apply(Tile tile) {
+	private void apply(Filterable cellMap) {
 		int radius = NoiseUtil.round(this.smoothingRadius + 0.5F);
 		float radiusSq = this.smoothingRadius * this.smoothingRadius;
 		
-		int maxZ = tile.getBlockSize().total() - radius;
-		int maxX = tile.getBlockSize().total() - radius;
+		int maxZ = cellMap.getBlockSize().total() - radius;
+		int maxX = cellMap.getBlockSize().total() - radius;
 		for (int z = radius; z < maxZ; ++z) {
 			for (int x = radius; x < maxX; ++x) {
-				Cell cell = tile.getCellRaw(x, z);
+				Cell cell = cellMap.getCellRaw(x, z);
 				if (!cell.erosionMask) {
 					float total = 0.0F;
 					float weights = 0.0F;
@@ -33,7 +32,7 @@ public record Smoothing(float smoothingRadius, float smoothingRate, Modifier mod
 							if (dist2 <= radiusSq) {
 								int px = x + dx;
 								int pz = z + dz;
-								Cell neighbour = tile.getCellRaw(px, pz);
+								Cell neighbour = cellMap.getCellRaw(px, pz);
 								if (!neighbour.isAbsent()) {
 									float value = neighbour.height;
 									float weight = 1.0F - dist2 / radiusSq;

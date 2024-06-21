@@ -129,7 +129,6 @@ public class WorldSettings {
         public int worldHeight;
         public int worldDepth;
         public int seaLevel;
-        public int seaFloor;
         public int lavaLevel;
         
         public Properties(SpawnType spawnType, int worldHeight, int worldDepth, int seaLevel, int lavaLevel) {

@@ -1,4 +1,4 @@
-package raccoonman.reterraforged.compat.terrablender;
+package raccoonman.reterraforged.integration.terrablender;
 
 import java.util.Arrays;
 import java.util.Map;

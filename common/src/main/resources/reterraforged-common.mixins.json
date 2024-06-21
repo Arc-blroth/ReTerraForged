@@ -24,11 +24,10 @@
     "terrablender.MixinClimateSampler",
     "terrablender.MixinNoiseChunk",
     "terrablender.MixinParameterList",
-    "terrablender.MixinTargetPoint",
-    "worldpreview.SampleUtilsMixin"
+    "terrablender.MixinTargetPoint"
   ],
   "client": [
-    "ScreenInvoker"
+  	"ScreenInvoker"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -2,6 +2,7 @@ package raccoonman.reterraforged.world.worldgen.terrain.populator;
 
 import java.util.Random;
 
+import raccoonman.reterraforged.world.worldgen.biome.Erosion;
 import raccoonman.reterraforged.world.worldgen.cell.Cell;
 import raccoonman.reterraforged.world.worldgen.heightmap.Levels;
 import raccoonman.reterraforged.world.worldgen.noise.NoiseUtil;
@@ -33,8 +34,8 @@ public class RiverPopulator implements Comparable<RiverPopulator> {
     public RiverPopulator(River river, RiverWarp warp, RiverConfig config, Settings settings, Levels levels) {
         this.fade = settings.fadeIn;
         this.fadeInv = 1.0F / settings.fadeIn;
-        this.bedWidth = new Range(0.25F, config.bedWidth * config.bedWidth);
-        this.banksWidth = new Range(1.5625F, config.bankWidth * config.bankWidth);
+        this.bedWidth = new Range(0.25F, (float)(config.bedWidth * config.bedWidth));
+        this.banksWidth = new Range(1.5625F, (float)(config.bankWidth * config.bankWidth));
         this.valleyWidth = new Range(settings.valleySize * settings.valleySize, settings.valleySize * settings.valleySize);
         this.river = river;
         this.warp = warp;
@@ -61,17 +62,15 @@ public class RiverPopulator implements Comparable<RiverPopulator> {
         }
         float bankHeight = this.getScaledSize(t, this.banksDepth);
         valleyAlpha = this.valleyCurve.apply(valleyAlpha);
-        
+
         float mouthModifier = getMouthModifier(cell);
         float bedHeight = this.getScaledSize(t, this.bedDepth);
         
-        float riverDistance = Math.min(cell.riverDistance, 1.0F - valleyAlpha);
-        cell.riverDistance = riverDistance;
-//        cell.terrainMask *= riverDistance;
-        
-//        cell.height = Math.min(NoiseUtil.lerp(cell.height, bankHeight, valleyAlpha), cell.height);
+        cell.riverDistance = Math.min(cell.riverDistance, 1.0F - valleyAlpha);
+        cell.height = Math.min(NoiseUtil.lerp(cell.height, bankHeight, valleyAlpha), cell.height);
 
         float banks = d2 * mouthModifier;
+        cell.riverBanks = 1.0F / banks;
         float banksAlpha = this.getDistanceAlpha(t, banks, this.banksWidth);
         if (banksAlpha == 0.0F) {
             return;
@@ -91,8 +90,8 @@ public class RiverPopulator implements Comparable<RiverPopulator> {
 
     public RiverConfig createForkConfig(float t, Levels levels) {
         int bedHeight = levels.scale(this.getScaledSize(t, this.bedDepth));
-        int bedWidth = (int) Math.round(Math.sqrt(this.getScaledSize(t, this.bedWidth)) * 0.75);
-        int bankWidth = (int) Math.round(Math.sqrt(this.getScaledSize(t, this.banksWidth)) * 0.75);
+        int bedWidth = (int)Math.round(Math.sqrt(this.getScaledSize(t, this.bedWidth)) * 0.75);
+        int bankWidth = (int)Math.round(Math.sqrt(this.getScaledSize(t, this.banksWidth)) * 0.75);
         bedWidth = Math.max(1, bedWidth);
         bankWidth = Math.max(bedWidth + 1, bankWidth);
         return this.config.createFork(bedHeight, bedWidth, bankWidth, levels);

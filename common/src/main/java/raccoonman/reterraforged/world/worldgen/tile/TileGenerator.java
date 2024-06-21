@@ -5,14 +5,13 @@ import java.util.concurrent.CompletableFuture;
 import raccoonman.reterraforged.concurrent.ThreadPools;
 import raccoonman.reterraforged.concurrent.pool.ArrayPool;
 import raccoonman.reterraforged.world.worldgen.cell.Cell;
-import raccoonman.reterraforged.world.worldgen.cell.noise.CellSampler;
 import raccoonman.reterraforged.world.worldgen.heightmap.Heightmap;
 import raccoonman.reterraforged.world.worldgen.rivermap.Rivermap;
 import raccoonman.reterraforged.world.worldgen.tile.Tile.Chunk;
 import raccoonman.reterraforged.world.worldgen.tile.filter.WorldFilters;
 
 public class TileGenerator {
-	private ThreadLocal<Heightmap> heightmap;
+	private Heightmap heightmap;
 	private WorldFilters filters;
 	private ArrayPool<Cell> cellPool;
 	private ArrayPool<Chunk> chunkPool;
@@ -23,7 +22,7 @@ public class TileGenerator {
 	private int batchSize;
 	private int batchCount;
 	
-	public TileGenerator(ThreadLocal<Heightmap> heightmap, WorldFilters filters, int tileChunks, int tileBorder, int batchCount) {
+	public TileGenerator(Heightmap heightmap, WorldFilters filters, int tileChunks, int tileBorder, int batchCount) {
 		this.heightmap = heightmap;
 		this.filters = filters;
 		this.cellPool = ArrayPool.of(100, (length) -> {
@@ -42,6 +41,10 @@ public class TileGenerator {
 		this.batchCount = batchCount;
 	}
 	
+	public Heightmap getHeightmap() {
+		return this.heightmap;
+	}
+	
 	public CompletableFuture<Tile> generate(int tileX, int tileZ) {
 		Tile tile = this.makeTile(tileX, tileZ);
 		CompletableFuture<?>[] futures = new CompletableFuture<?>[this.batchCount * this.batchCount];
@@ -50,9 +53,6 @@ public class TileGenerator {
 				int chunkX = batchX * this.batchSize;
 				int chunkZ = batchZ * this.batchSize;
 				futures[batchZ * this.batchCount + batchX] = CompletableFuture.runAsync(() -> {
-					Heightmap heightmap = this.heightmap.get();
-					CellSampler.Provider cellProvider = heightmap.cellProvider();
-					
 			        int maxX = Math.min(this.tileSizeChunks.total(), chunkX + this.batchSize);
 			        int maxZ = Math.min(this.tileSizeChunks.total(), chunkZ + this.batchSize);
 		            for (int cZ = chunkZ; cZ < maxZ; cZ++) {
@@ -65,12 +65,13 @@ public class TileGenerator {
 		                    		int worldX = chunk.getBlockX() + dx;
 		                    		int worldZ = chunk.getBlockZ() + dz;
 		                    		Cell cell = chunk.getCell(dx, dz);
-		                    		cellProvider.setCacheCell(cell);
+		                    		
+			                        this.heightmap.applyTerrain(cell, worldX, worldZ);
+			                        rivers = Rivermap.get(cell, rivers, this.heightmap);
+			                        this.heightmap.applyRivers(cell, worldX, worldZ, rivers);
+			                        this.heightmap.applyClimate(cell, worldX, worldZ);
 
-			                        heightmap.applyContinent(cell, worldX, worldZ);
-			                        rivers = Rivermap.get(cell, rivers, heightmap);
-			                        heightmap.applyTerrain(cell, worldX, worldZ, rivers);
-			                        heightmap.applyClimate(cell, worldX, worldZ);
+			                        chunk.updateGenerationHeight(cell);
 			                    }
 			                }
 			            }
@@ -94,9 +95,6 @@ public class TileGenerator {
 				int chunkX = batchX * this.batchSize;
 				int chunkZ = batchZ * this.batchSize;
 				futures[batchZ * this.batchCount + batchX] = CompletableFuture.runAsync(() -> {
-					Heightmap heightmap = this.heightmap.get();
-					CellSampler.Provider cellProvider = heightmap.cellProvider();
-					
 			        int maxX = Math.min(this.tileSizeChunks.total(), chunkX + this.batchSize);
 			        int maxZ = Math.min(this.tileSizeChunks.total(), chunkZ + this.batchSize);
 			        for (int cZ = chunkZ; cZ < maxZ; cZ++) {
@@ -109,12 +107,13 @@ public class TileGenerator {
 		                    		float worldX = (chunk.getBlockX() + dx) * zoom + translateX;
 		                    		float worldZ = (chunk.getBlockZ() + dz) * zoom + translateZ;
 		                    		Cell cell = chunk.getCell(dx, dz);
-		                    		cellProvider.setCacheCell(cell);
+		                    		
+			                        this.heightmap.applyTerrain(cell, worldX, worldZ);
+			                        rivers = Rivermap.get(cell, rivers, this.heightmap);
+			                        this.heightmap.applyRivers(cell, worldX, worldZ, rivers);
+			                        this.heightmap.applyClimate(cell, worldX, worldZ);
 
-		                    		heightmap.applyContinent(cell, worldX, worldZ);
-			                        rivers = Rivermap.get(cell, rivers, heightmap);
-			                        heightmap.applyTerrain(cell, worldX, worldZ, rivers);
-			                        heightmap.applyClimate(cell, worldX, worldZ);
+			                        chunk.updateGenerationHeight(cell);
 			                    }
 			                }
 			            }

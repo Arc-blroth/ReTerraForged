@@ -31,17 +31,15 @@ import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import raccoonman.reterraforged.world.worldgen.GeneratorContext;
 import raccoonman.reterraforged.world.worldgen.RTFRandomState;
-import raccoonman.reterraforged.world.worldgen.WorldGenFlags;
 
 @Mixin(ChunkStatusTasks.class)
 public class MixinChunkStatusTasks {
 
-	//structure starts
 	@Inject(
 		at = @At("HEAD"),
 		method = "generateStructureStarts"
 	)
-	private static void generateStructureStarts$HEAD(WorldGenContext worldGenContext, ChunkStep chunkStep, StaticCache2D<GenerationChunkHolder> staticCache2D, ChunkAccess chunkAccess, CallbackInfoReturnable<CompletableFuture<ChunkAccess>> callback) {
+	private static void generateStructureStarts(WorldGenContext worldGenContext, ChunkStep chunkStep, StaticCache2D<GenerationChunkHolder> staticCache2D, ChunkAccess chunkAccess, CallbackInfoReturnable<CompletableFuture<ChunkAccess>> callback) {
 		RandomState randomState = worldGenContext.level().getChunkSource().randomState();
 		if((Object) randomState instanceof RTFRandomState rtfRandomState) {
 			ChunkPos chunkPos = chunkAccess.getPos();
@@ -50,28 +48,10 @@ public class MixinChunkStatusTasks {
 			
 			if(context != null) {
 				context.cache.queueAtChunk(chunkPos.x, chunkPos.z);
-
-				WorldGenFlags.setFastCellLookups(false);
-			}
-		}
-	}
-	
-	@Inject(
-		at = @At("TAIL"),
-		method = "generateStructureStarts"
-	)
-	private static void generateStructureStarts$TAIL(WorldGenContext worldGenContext, ChunkStep chunkStep, StaticCache2D<GenerationChunkHolder> staticCache2D, ChunkAccess chunkAccess, CallbackInfoReturnable<CompletableFuture<ChunkAccess>> callback) {
-		RandomState randomState = worldGenContext.level().getChunkSource().randomState();
-		if((Object) randomState instanceof RTFRandomState rtfRandomState) {
-			@Nullable
-			GeneratorContext context = rtfRandomState.generatorContext();
-			if(context != null) {
-				WorldGenFlags.setFastCellLookups(true);
 			}
 		}
 	}
 
-	//features
 	@Inject(
 		at = @At("TAIL"),
 		method = "generateFeatures"

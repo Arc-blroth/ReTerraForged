@@ -2,6 +2,7 @@ package raccoonman.reterraforged.client.gui.screen.presetconfig;
 
 import java.awt.Color;
 
+import net.minecraft.world.level.levelgen.NoiseRouterData;
 import raccoonman.reterraforged.world.worldgen.cell.Cell;
 import raccoonman.reterraforged.world.worldgen.heightmap.Levels;
 import raccoonman.reterraforged.world.worldgen.noise.NoiseUtil;
@@ -138,32 +139,6 @@ public enum RenderMode {
 		@Override
 		public float getNoiseValue(Cell cell) {
 			return cell.terrainRegionId;
-		}
-    },
-	CONTINENT_EDGE {
-    	
-        @Override
-        public int getColor(Cell cell, Levels levels, float scale, float bias) {
-        	float continentEdge = NoiseUtil.clamp(this.getNoiseValue(cell), 0.0F, 1.0F);
-        	return rgba(continentEdge, continentEdge, continentEdge);
-        }
-
-		@Override
-		public float getNoiseValue(Cell cell) {
-			return cell.continentEdge;
-		}
-    },
-	CONTINENT_NOISE {
-    	
-        @Override
-        public int getColor(Cell cell, Levels levels, float scale, float bias) {
-        	float continentNoise = NoiseUtil.clamp(this.getNoiseValue(cell), 0.0F, 1.0F);
-        	return rgba(continentNoise, continentNoise, continentNoise);
-        }
-
-		@Override
-		public float getNoiseValue(Cell cell) {
-			return cell.continentNoise;
 		}
     },
 	CONTINENTALNESS {

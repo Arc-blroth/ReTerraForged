@@ -32,7 +32,9 @@ public class MixinMinecraftServer {
 	
 	@Inject(
 		method = "method_29440",
-		at = @At("TAIL")
+		require = 1,
+		at = @At("TAIL"),
+		remap = false
 	)
 	private void method_29440(CallbackInfo callback) {
 		this.templateManager.onReload(this.getResourceManager());

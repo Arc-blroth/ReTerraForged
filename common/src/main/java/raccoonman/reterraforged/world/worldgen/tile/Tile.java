@@ -6,8 +6,9 @@ import raccoonman.reterraforged.concurrent.Resource;
 import raccoonman.reterraforged.concurrent.cache.SafeCloseable;
 import raccoonman.reterraforged.world.worldgen.cell.Cell;
 import raccoonman.reterraforged.world.worldgen.cell.CellLookup;
+import raccoonman.reterraforged.world.worldgen.tile.filter.Filterable;
 
-public class Tile implements SafeCloseable, CellLookup {
+public class Tile implements SafeCloseable, Filterable, CellLookup {
 	private int x, z;
 	private int chunkX, chunkZ;
 	private int size;
@@ -75,14 +76,17 @@ public class Tile implements SafeCloseable, CellLookup {
         }
     }
 
+	@Override
 	public int getBlockX() {
 		return Size.chunkToBlock(this.chunkX);
 	}
 
+	@Override
 	public int getBlockZ() {
 		return Size.chunkToBlock(this.chunkZ);
 	}
 
+	@Override
 	public Size getBlockSize() {
 		return this.blockSize;
 	}
@@ -91,10 +95,12 @@ public class Tile implements SafeCloseable, CellLookup {
 		return this.chunkSize;
 	}
 
+	@Override
 	public Cell[] getBacking() {
 		return this.cache;
 	}
 
+	@Override
 	public Cell getCellRaw(int x, int z) {
 		int index = Tile.this.blockSize.indexOf(x, z);
         if (index < 0 || index >= Tile.this.blockSize.arraySize()) {
@@ -130,7 +136,7 @@ public class Tile implements SafeCloseable, CellLookup {
         private int regionBlockX;
         private int regionBlockZ;
 		
-        private float highestPoint;
+        private float generationHeight;
         
 		public Chunk(int regionChunkX, int regionChunkZ) {
             this.regionBlockX = regionChunkX << 4;
@@ -140,17 +146,17 @@ public class Tile implements SafeCloseable, CellLookup {
             this.blockX = this.chunkX << 4;
             this.blockZ = this.chunkZ << 4;
             
-            this.highestPoint = Float.MIN_VALUE;
+            this.generationHeight = Float.MIN_VALUE;
 		}
 		
-		public void updateHighestPoint(Cell cell) {
-            if(cell.height > this.highestPoint) {
-            	this.highestPoint = cell.height;
+		protected void updateGenerationHeight(Cell cell) {
+            if(this.generationHeight < cell.height) {
+            	this.generationHeight = cell.height;
             }
 		}
 		
-		public float getHighestPoint() {
-			return this.highestPoint;
+		public float getGenerationHeight() {
+			return this.generationHeight;
 		}
 		
         public int getChunkX() {

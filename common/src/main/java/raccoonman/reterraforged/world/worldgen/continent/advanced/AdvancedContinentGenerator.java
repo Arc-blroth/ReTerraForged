@@ -102,11 +102,8 @@ public class AdvancedContinentGenerator extends AbstractContinent implements Sim
             return;
         }
         cell.continentId = AbstractContinent.getCellValue(this.seed, cellX, cellY);
-        
-        float cliffNoise = this.cliffNoise.compute(x, y, 0);
-        float bayNoise = this.bayNoise.compute(x, y, 0);
-        cell.continentEdge = this.getDistanceValue(x, y, cellX, cellY, nearest, true, cliffNoise, bayNoise);
-        cell.continentNoise = this.getDistanceValue(x, y, cellX, cellY, nearest, false, cliffNoise, bayNoise);
+        cell.continentEdge = this.getDistanceValue(x, y, cellX, cellY, nearest, true);
+        cell.continentalness = this.getDistanceValue(x, y, cellX, cellY, nearest, false);
     }
     
     @Override
@@ -142,13 +139,13 @@ public class AdvancedContinentGenerator extends AbstractContinent implements Sim
         );
     }
 
-    protected float getDistanceValue(float x, float y, int cellX, int cellY, float distance, boolean clamp, float cliffNoise, float bayNoise) {
+    protected float getDistanceValue(float x, float y, int cellX, int cellY, float distance, boolean clamp) {
         distance = this.getVariedDistanceValue(cellX, cellY, distance);
         distance = NoiseUtil.sqrt(distance);
         distance = NoiseUtil.map(distance, 0.05F, 0.25F, 0.2F, clamp);
-        distance = this.getCoastalDistanceValue(x, y, distance, cliffNoise, bayNoise);
+        distance = this.getCoastalDistanceValue(x, y, distance, true);
         if (distance < this.controlPoints.nearInland && distance >= this.controlPoints.shallowOcean) {
-            distance = this.getCoastalDistanceValue(x, y, distance, cliffNoise, bayNoise);
+            distance = this.getCoastalDistanceValue(x, y, distance, true);
         }
         return distance;
     }
@@ -162,12 +159,13 @@ public class AdvancedContinentGenerator extends AbstractContinent implements Sim
         return distance;
     }
     
-    protected float getCoastalDistanceValue(float x, float y, float distance, float cliffNoise, float bayNoise) {
+    protected float getCoastalDistanceValue(float x, float y, float distance, boolean cliffs) {
         if (distance > this.controlPoints.shallowOcean && distance < this.controlPoints.nearInland) {
             float alpha = distance / this.controlPoints.nearInland;
-            distance = NoiseUtil.lerp(distance * cliffNoise, distance, alpha);
+            float cliff = cliffs ? this.cliffNoise.compute(x, y, 0) : 1.0F;
+            distance = NoiseUtil.lerp(distance * cliff, distance, alpha);
             if (distance < this.controlPoints.shallowOcean) {
-                distance = this.controlPoints.shallowOcean * bayNoise;
+                distance = this.controlPoints.shallowOcean * this.bayNoise.compute(x, y, 0);
             }
         }
         return distance;
