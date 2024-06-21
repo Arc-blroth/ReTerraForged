@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.NoiseSettings;
 import raccoonman.reterraforged.world.worldgen.GeneratorContext;
-import raccoonman.reterraforged.world.worldgen.WorldGenFlags;
 import raccoonman.reterraforged.world.worldgen.cell.Cell;
 import raccoonman.reterraforged.world.worldgen.cell.noise.CellSampler;
 import raccoonman.reterraforged.world.worldgen.terrain.TerrainType;
@@ -33,10 +32,6 @@ public class WorldLookup {
 		int minY = noiseSettings.minY();
 		int genHeight = noiseSettings.height();
 		int cellHeight = noiseSettings.getCellHeight();
-		
-		if(!WorldGenFlags.cullNoiseSections()) {
-			return genHeight;
-		}
 		
 		@Nullable
 		Tile tile = load ? this.cache.provideAtChunk(chunkX, chunkZ) : this.cache.provideAtChunkIfPresent(chunkX, chunkZ);

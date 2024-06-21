@@ -24,7 +24,6 @@ import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import raccoonman.reterraforged.RTFCommon;
 import raccoonman.reterraforged.world.worldgen.RTFRandomState;
-import raccoonman.reterraforged.world.worldgen.WorldGenFlags;
 
 @Pseudo
 @Mixin(targets = "caeruleusTait.world.preview.backend.worker.SampleUtils", remap = false)
@@ -45,6 +44,7 @@ public class SampleUtilsMixin {
 				MinecraftServer.class, BiomeSource.class, ChunkGenerator.class, WorldOptions.class, LevelStem.class, LevelHeightAccessor.class
 			}
 		)
+//		method = "<init>(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/world/level/biome/BiomeSource;Lnet/minecraft/world/level/chunk/ChunkGenerator;Lnet/minecraft/world/level/levelgen/WorldOptions;Lnet/minecraft/world/level/dimension/LevelStem;Lnet/minecraft/world/level/LevelHeightAccessor;)V",
 	)
 	private void SampleUtils$1(CallbackInfo callback) {
 		this.initRTF();
@@ -59,6 +59,7 @@ public class SampleUtilsMixin {
 				BiomeSource.class, ChunkGenerator.class, LayeredRegistryAccess.class, WorldOptions.class, LevelStem.class, LevelHeightAccessor.class, WorldDataConfiguration.class, Proxy.class, Path.class 
 			}
 		)
+//		method = "<init>(Lnet/minecraft/world/level/biome/BiomeSource;Lnet/minecraft/world/level/chunk/ChunkGenerator;Lnet/minecraft/core/LayeredRegistryAccess;Lnet/minecraft/world/level/levelgen/WorldOptions;Lnet/minecraft/world/level/dimension/LevelStem;Lnet/minecraft/world/level/LevelHeightAccessor;Lnet/minecraft/world/level/WorldDataConfiguration;Ljava/net/Proxy;Ljava/nio/file/Path;)V"
 	) 
 	private void SampleUtils$2(CallbackInfo callback) {
 		this.initRTF();
@@ -66,13 +67,15 @@ public class SampleUtilsMixin {
 	
 	private void initRTF() {
 		if((Object) this.randomState instanceof RTFRandomState rtfRandomState) {
-			WorldGenFlags.setCullNoiseSections(false);
-			
 			rtfRandomState.initialize(this.registryAccess);
 			
 			RTFCommon.LOGGER.info("initialized rtf data");
 		} else {
 			throw new IllegalStateException();
 		}
+	}
+	
+	static {
+		System.out.println("MARKER");
 	}
 }
