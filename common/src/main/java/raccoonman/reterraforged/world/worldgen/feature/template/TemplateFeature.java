@@ -79,7 +79,8 @@ public class TemplateFeature extends Feature<Config<?>> {
 	
 	        return false;
         } else {
-        	throw new IllegalStateException();
+        	// throw new IllegalStateException();
+			return false;
         }
     }
 

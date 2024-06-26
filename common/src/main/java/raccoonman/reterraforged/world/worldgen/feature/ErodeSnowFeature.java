@@ -117,7 +117,8 @@ public class ErodeSnowFeature extends Feature<Config> {
 			}
 	        return true;
 		} else {
-			throw new IllegalStateException();
+			// throw new IllegalStateException();
+			return false;
 		}
 	}
 
